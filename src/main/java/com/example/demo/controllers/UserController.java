@@ -24,53 +24,58 @@ import org.slf4j.LoggerFactory;
 @RestController
 @RequestMapping("/api/user")
 public class UserController {
-	final Logger logger = LoggerFactory.getLogger(UserController.class);
-	
-	@Autowired
-	private UserRepository userRepository;
-	
-	@Autowired
-	private CartRepository cartRepository;
+    final Logger logger = LoggerFactory.getLogger(UserController.class);
 
-	@Autowired
-	private BCryptPasswordEncoder bCryptPasswordEncoder;
+    @Autowired
+    private UserRepository userRepository;
 
-	@GetMapping("/id/{id}")
-	public ResponseEntity<User> findById(@PathVariable Long id) {
-		return ResponseEntity.of(userRepository.findById(id));
-	}
-	
-	@GetMapping("/{username}")
-	public ResponseEntity<User> findByUserName(@PathVariable String username) {
-		User user = userRepository.findByUsername(username);
+    @Autowired
+    private CartRepository cartRepository;
 
-		if (user == null) {
-			logger.error("Did not find user with username, {}.", username);
-		} else {
-			logger.info("Found user with username, {}.", username);
-		}
+    @Autowired
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
 
-		return user == null ? ResponseEntity.notFound().build() : ResponseEntity.ok(user);
-	}
-	
-	@PostMapping("/create")
-	public ResponseEntity<User> createUser(@RequestBody CreateUserRequest createUserRequest) {
-		User user = new User();
-		String username = createUserRequest.getUsername();
-		user.setUsername(username);
-		Cart cart = new Cart();
-		cartRepository.save(cart);
-		user.setCart(cart);
+    @GetMapping("/test")
+    public String Test() {
+        return "It Working!";
+    }
 
-		if (createUserRequest.getPassword() == null || createUserRequest.getPassword().length() < 7 ||
-				!createUserRequest.getPassword().equals(createUserRequest.getConfirmPassword())) {
-			return ResponseEntity.badRequest().build();
-		}
-		user.setPassword(bCryptPasswordEncoder.encode(createUserRequest.getPassword()));
-		userRepository.save(user);
+    @GetMapping("/id/{id}")
+    public ResponseEntity<User> findById(@PathVariable Long id) {
+        return ResponseEntity.of(userRepository.findById(id));
+    }
 
-		logger.info("Created user with username, {}.", username);
+    @GetMapping("/{username}")
+    public ResponseEntity<User> findByUserName(@PathVariable String username) {
+        User user = userRepository.findByUsername(username);
 
-		return ResponseEntity.ok(user);
-	}
+        if (user == null) {
+            logger.error("Did not find user with username, {}.", username);
+        } else {
+            logger.info("Found user with username, {}.", username);
+        }
+
+        return user == null ? ResponseEntity.notFound().build() : ResponseEntity.ok(user);
+    }
+
+    @PostMapping("/create")
+    public ResponseEntity<User> createUser(@RequestBody CreateUserRequest createUserRequest) {
+        User user = new User();
+        String username = createUserRequest.getUsername();
+        user.setUsername(username);
+        Cart cart = new Cart();
+        cartRepository.save(cart);
+        user.setCart(cart);
+
+        if (createUserRequest.getPassword() == null || createUserRequest.getPassword().length() < 7 ||
+                !createUserRequest.getPassword().equals(createUserRequest.getConfirmPassword())) {
+            return ResponseEntity.badRequest().build();
+        }
+        user.setPassword(bCryptPasswordEncoder.encode(createUserRequest.getPassword()));
+        userRepository.save(user);
+
+        logger.info("Created user with username, {}.", username);
+
+        return ResponseEntity.ok(user);
+    }
 }
