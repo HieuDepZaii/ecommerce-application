@@ -1,5 +1,5 @@
-# Use the official OpenJDK 11 image as the base image
-FROM openjdk:11-jre AS builder
+# Use the official OpenJDK 11 image with JDK as the base image for the builder stage
+FROM openjdk:11 AS builder
 
 # Set the working directory in the container
 WORKDIR /app
@@ -13,7 +13,7 @@ COPY . /app
 # Build the Maven project
 RUN mvn -B -DskipTests clean package
 
-# Use a new minimal image for runtime
+# Use a smaller image for runtime
 FROM openjdk:11-jre
 
 # Set the working directory in the container
