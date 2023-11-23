@@ -1,8 +1,11 @@
-# Use the official Eclipse Temurin 17 JDK image as the base image
-FROM eclipse-temurin:17-jre-jammy AS builder
+# Use the official OpenJDK 11 image as the base image
+FROM openjdk:11-jre AS builder
 
 # Set the working directory in the container
 WORKDIR /app
+
+# Install Maven
+RUN apt-get update && apt-get install -y maven
 
 # Copy the Maven project files to the container
 COPY . /app
@@ -11,7 +14,7 @@ COPY . /app
 RUN mvn -B -DskipTests clean package
 
 # Use a new minimal image for runtime
-FROM eclipse-temurin:17-jre-jammy
+FROM openjdk:11-jre
 
 # Set the working directory in the container
 WORKDIR /app
