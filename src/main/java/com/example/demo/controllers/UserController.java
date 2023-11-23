@@ -1,7 +1,7 @@
 package com.example.demo.controllers;
 
-import java.util.Optional;
 
+import com.example.demo.Exception.CustomException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,10 +35,6 @@ public class UserController {
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    @GetMapping("/test")
-    public String Test() {
-        return "It Working!";
-    }
 
     @GetMapping("/id/{id}")
     public ResponseEntity<User> findById(@PathVariable Long id) {
@@ -48,14 +44,13 @@ public class UserController {
     @GetMapping("/{username}")
     public ResponseEntity<User> findByUserName(@PathVariable String username) {
         User user = userRepository.findByUsername(username);
-
         if (user == null) {
             logger.error("Did not find user with username, {}.", username);
+            throw new CustomException("NOT FOUND",HttpStatus.NOT_FOUND);
         } else {
             logger.info("Found user with username, {}.", username);
         }
-
-        return user == null ? ResponseEntity.notFound().build() : ResponseEntity.ok(user);
+        return ResponseEntity.ok(user);
     }
 
     @PostMapping("/create")
@@ -69,13 +64,11 @@ public class UserController {
 
         if (createUserRequest.getPassword() == null || createUserRequest.getPassword().length() < 7 ||
                 !createUserRequest.getPassword().equals(createUserRequest.getConfirmPassword())) {
-            return ResponseEntity.badRequest().build();
+            throw new CustomException("Invalid username and password");
         }
         user.setPassword(bCryptPasswordEncoder.encode(createUserRequest.getPassword()));
         userRepository.save(user);
-
         logger.info("Created user with username, {}.", username);
-
         return ResponseEntity.ok(user);
     }
 }
