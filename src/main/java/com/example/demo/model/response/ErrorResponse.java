@@ -1,4 +1,4 @@
-package com.example.demo.response;
+package com.example.demo.model.response;
 
 public class ErrorResponse {
     private String messages;
