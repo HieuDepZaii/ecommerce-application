@@ -28,7 +28,7 @@ public class OrderController {
 	public ResponseEntity<UserOrder> submit(@PathVariable String username) {
 		User user = userRepository.findByUsername(username);
 		if (user == null) {
-			logger.error("Order: Could not find user name");
+			logger.error("Order submit failed: Could not find user name");
 
 			return ResponseEntity.notFound().build();
 		}
@@ -42,7 +42,7 @@ public class OrderController {
 	public ResponseEntity<List<UserOrder>> getOrdersForUser(@PathVariable String username) {
 		User user = userRepository.findByUsername(username);
 		if(user == null) {
-			logger.error("Order: Could not find user name");
+			logger.error("Order failed: Could not find user name");
 			return ResponseEntity.notFound().build();
 		}
 
