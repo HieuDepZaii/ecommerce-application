@@ -21,6 +21,8 @@ import com.example.demo.model.requests.CreateUserRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.transaction.Transactional;
+
 @RestController
 @RequestMapping("/api/user")
 public class UserController {
@@ -45,7 +47,7 @@ public class UserController {
     public ResponseEntity<User> findByUserName(@PathVariable String username) {
         User user = userRepository.findByUsername(username);
         if (user == null) {
-            logger.error("Did not find user with username, {}.", username);
+            logger.error("Could not find username, {}.", username);
             throw new CustomException("NOT FOUND",HttpStatus.NOT_FOUND);
         } else {
             logger.info("Found user with username, {}.", username);
@@ -54,6 +56,7 @@ public class UserController {
     }
 
     @PostMapping("/create")
+    @Transactional
     public ResponseEntity<User> createUser(@RequestBody CreateUserRequest createUserRequest) {
         User user = new User();
         String username = createUserRequest.getUsername();
